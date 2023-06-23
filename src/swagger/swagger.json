@@ -1,0 +1,696 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Authen Server",
+    "description": "API for authen server",
+    "version": "1"
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "*API for authentication*"
+    },
+    {
+      "name": "register",
+      "description": "*API for register authen*"
+    },
+    {
+      "name": "claims",
+      "description": "*API for Claims*"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/login/{adminId}": {
+      "post": {
+        "security": [
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "description": "Get JWZ token for login.",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server that you want to login to.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "1234"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-token/{adminId}": {
+      "post": {
+        "security": [
+
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify Token",
+        "description": "Verify a JWZ Token and return true if this token is valid.",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server what you want to login to.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Your jwz token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Your JWZ token",
+                    "example": "token123"
+                  },
+                  "role": {
+                    "type": "integer",
+                    "description": "Role of Operator",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Result check your JWZ Token",
+                  "properties": {
+                    "isValid": {
+                      "type": "boolean",
+                      "description": "Return true if your JWZ token is valid, else return false",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-token-admin/{adminId}": {
+      "post": {
+        "security": [
+
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "API Verify Token",
+        "description": "Verify a JWZ Token and return true if this token is admin token.",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server what you want to login to.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Your jwz token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/register": {
+      "post": {
+        "security": [
+
+        ],
+        "tags": [
+          "register"
+        ],
+        "summary": "Register new admin",
+        "description": "Register new admin server",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Holder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Admin information",
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "description": "DID of User",
+                      "example": "12345"
+                    },
+                    "adminId": {
+                      "type": "string",
+                      "description": "DID of Admin",
+                      "example": "12345"
+                    },
+                    "claimId": {
+                      "type": "string",
+                      "description": "Id of Claims to generate input for zkProof Login to this Issuer.",
+                      "example": "id123"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "Version of claim",
+                      "example": 1
+                    },
+                    "revNonce": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "Revocation nonce of claim",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/{adminId}/operators": {
+      "post": {
+        "security": [
+          {
+            "Authorization": ["read", "write"]
+          }
+        ],
+        "tags": [
+          "register"
+        ],
+        "summary": "Create operator",
+        "description": "Create an Operator in Admin's server",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operator"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "Authorization": ["read", "write"]
+          }
+        ],
+        "tags": [
+          "register"
+        ],
+        "summary": "Get list operator",
+        "description": "Get list operator                                             ",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "adminId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/{adminId}/operators/{operatorId}": {
+      "get": {
+        "security": [
+
+        ],
+        "tags": [
+          "register"
+        ],
+        "summary": "Get operator infor",
+        "description": "Get operator infor                                             ",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          },
+          {
+            "name": "operatorId",
+            "in": "path",
+            "description": "DID of Operator",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Operator's information",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "description": "DID of User",
+                      "example": "1234"
+                    },
+                    "adminId": {
+                      "type": "string",
+                      "description": "DID of Server",
+                      "example": "1234"
+                    },
+                    "role": {
+                      "description": "Role of Operator (Admin or Operator)",
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "claimId": {
+                      "type": "string",
+                      "description": "Id of Claims to generate input for zkProof Login to this Issuer.",
+                      "example": "id123"
+                    },
+                    "schemaHash": {
+                      "type": "string",
+                      "description": "Authen Schema hash",
+                      "example": "123456"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "Version of claim",
+                      "example": 1
+                    },
+                    "revNonce": {
+                      "type": "integer",
+                      "format": "int64",
+                      "description": "Revocation nonce of claim",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Authorization": ["read", "write"]
+          }
+        ],
+        "tags": [
+          "register"
+        ],
+        "summary": "Disable operator",
+        "description": "Disable operator                                             ",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "path",
+            "description": "DID of Server",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          },
+          {
+            "name": "operatorId",
+            "in": "path",
+            "description": "DID of operator",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/claims/{claimId}/proof": {
+      "get": {
+        "security": [
+
+        ],
+        "tags": [
+          "claims"
+        ],
+        "summary": "Generate proof input",
+        "description": "Generate proof input for claim login",
+        "parameters": [
+          {
+            "name": "claimId",
+            "in": "path",
+            "description": "Your claimId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1234"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "type in (mtp, nonRevMtp)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "mtp",
+              "enum": [
+                "mtp",
+                "nonRevMtp"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "KYC Input",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIResponse": {
+        "type": "object",
+        "properties": {
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "proof": {
+            "type": "object",
+            "description": "Your proof"
+          },
+          "public_signals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Your Public Signals"
+            }
+          },
+          "circuitId": {
+            "type": "string",
+            "description": "CircuitId"
+          },
+          "schema": {
+            "type": "string",
+            "description": "Schema Hash of Authen (123456)"
+          },
+          "algorithm": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "string"
+          }
+        },
+        "required": ["proof", "public_signals", "circuitId", "schema", "algorithm", "payload"]
+      },
+      "VerifyToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Your JWZ token",
+            "example": "token123"
+          }
+        },
+        "required": ["token"]
+      },
+      "Holder": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "1234",
+            "description": "DID of User"
+          }
+        },
+        "required": ["userId"]
+      },
+      "Operator": {
+        "type": "object",
+        "properties": {
+          "operatorId": {
+            "type": "string",
+            "example": "1234",
+            "description": "DID of Operator"
+          },
+          "role": {
+            "type": "integer",
+            "example": 2,
+            "description": "Operator's role"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey",
+        "description": "JWZ Token"
+      }
+    }
+  }
+}
