@@ -139,11 +139,22 @@ export async function registerOperator(userId: string, adminId: string, operator
     }
     GlobalVariables.logTree = false;
     
-    try {        
+    try {
         
+        // const newOperatorClaim = zidenjsClaim.newClaim(
+        //     zidenjsClaim.schemaHashFromBigInt(BigInt(authenSchemaHash)),
+        //     zidenjsClaim.withValueData( zidenjsUtils.numToBits(BigInt(operator), 32), zidenjsUtils.numToBits(BigInt(0), 32)),
+        //     zidenjsClaim.withIndexData( zidenjsUtils.hexToBuffer(userId, 32), zidenjsUtils.hexToBuffer(adminId, 32)),
+        //     zidenjsClaim.withIndexID(zidenjsUtils.hexToBuffer(userId, 32))
+        // );
+
+        const adminBigInt = BigInt("0x" + adminId);
+        const operatorBigInt = BigInt("0x" + operator);
+        const value = (adminBigInt + operatorBigInt);
+
         const newOperatorClaim = zidenjsClaim.newClaim(
             zidenjsClaim.schemaHashFromBigInt(BigInt(authenSchemaHash)),
-            zidenjsClaim.withValueData( zidenjsUtils.numToBits(BigInt(operator), 32), zidenjsUtils.numToBits(BigInt(0), 32)),
+            zidenjsClaim.withValueData( zidenjsUtils.numToBits(BigInt(operator), 32), zidenjsUtils.numToBits(value, 32)),
             zidenjsClaim.withIndexData( zidenjsUtils.hexToBuffer(userId, 32), zidenjsUtils.hexToBuffer(adminId, 32)),
             zidenjsClaim.withIndexID(zidenjsUtils.hexToBuffer(userId, 32))
         );

@@ -75,7 +75,9 @@ export class AuthenController {
           let parsedToken = JWZ.parse(token);
           const authenIsser = await getAuthenIssuerId();
           const authenIssuerId = BigInt("0x" + authenIsser!).toString();
-          let isValid = await parsedToken.verifyToken(vk, Role.Admin, schemaHash, authenIssuerId, timeLimit)
+          const value = (BigInt("0x" + adminId) + BigInt("0x" + Role.Admin)).toString();
+          
+          let isValid = await parsedToken.verifyToken(vk, value, schemaHash, authenIssuerId, timeLimit)
 
           if (isValid) {
             next();
@@ -119,7 +121,9 @@ export class AuthenController {
       const authenIsser = await getAuthenIssuerId();
       const authenIssuerId = BigInt("0x" + authenIsser!).toString();
       try {
-        if ((await parsedToken.verifyToken(vk, role.toString(), schemaHash, authenIssuerId, timeLimit))) {
+        const value = (BigInt("0x" + adminId) + BigInt("0x" + role.toString())).toString();
+
+        if ((await parsedToken.verifyToken(vk, value, schemaHash, authenIssuerId, timeLimit))) {
           isValid = true;
         }
         
@@ -163,7 +167,8 @@ export class AuthenController {
       const authenIsser = await getAuthenIssuerId();
       const authenIssuerId = BigInt("0x" + authenIsser!).toString();
       try {
-        if ((await parsedToken.verifyToken(vk, Role.Admin, schemaHash, authenIssuerId, timeLimit))) {
+        const value = (BigInt("0x" + adminId) + BigInt("0x" + Role.Admin)).toString();
+        if ((await parsedToken.verifyToken(vk, value, schemaHash, authenIssuerId, timeLimit))) {
           isValid = true;
         }
       } catch (err) {
